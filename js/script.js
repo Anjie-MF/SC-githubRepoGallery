@@ -1,6 +1,8 @@
 const overview = document.querySelector(".overview"); //this targets my profile information
 const username = "Anjie-MF";
 const repoList = document.querySelector(".repo-list");
+const repoInfo = document.querySelector(".repos");
+const myRepoInfo = document.querySelector(".repo-data");
 
 
 const fetchMyInfo = async function () {
@@ -42,4 +44,27 @@ const displayReposInfo = function (repos) {
     displayRepoItem.innerHTML = `<h3>${repo.name}</h3>`;  // Shorter syntax using innerHTML
     repoList.append(displayRepoItem);  // Appends to the container
   }
+};
+
+repoList.addEventListener("click", function (e) {
+  if (e.target.matches("h3")) {
+    const repoName = e.target.innerText;
+    getSpecificRepoInfo(repoName);
+  }
+});
+
+const getSpecificRepoInfo = async function (repoName) {
+  const grabInfo = await fetch(`https://api.github.com/repos/${username}/${repoName}`);
+  const repoInfo = await grabInfo.json();
+  console.log(repoInfo);
+
+  const fetchLanguages = await fetch(repoInfo.languages_url);
+  const languageData = await fetchLanguages.json();
+
+  const languages = [];
+  for (const language in languageData) {
+    languages.push(language);
+  }
+
+  displayReposInfo(repoInfo, languages);
 };
