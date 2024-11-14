@@ -3,7 +3,8 @@ const username = "Anjie-MF";
 const repoList = document.querySelector(".repo-list"); //this target the repos list 
 const repoInfo = document.querySelector(".repos"); // this is where all the repo information appears
 const myRepoInfo = document.querySelector(".repo-data"); // this is where the individual repo data will appear
-
+const backtoRepoButton = document.querySelector(".view-repos");
+const filterInput = document.querySelector(".filter-repos"); //this selects the input with the placeholder
 
 const fetchMyInfo = async function () {
   const response = await fetch(`https://api.github.com/users/${username}`);
@@ -37,7 +38,8 @@ const fetchMyRepos = async function () {
   displayReposInfo(repoData);
 };
 
-const displayReposInfo = function (repos) { //this is a function   used to display a list of ALL of the repos in the gallery.
+const displayReposInfo = function (repos) {//this displays ALL OF THE REPOS in the gallery
+  filterInput.classList.remove("hide");
   for (const repo of repos) {
     const displayRepoItem = document.createElement("li");
     displayRepoItem.classList.add("repo");
@@ -70,10 +72,10 @@ const getSpecificRepoInfo = async function (repoName) { //intended get specific 
 };
 
 const displaySpecificRepoInfo = function (repoDetails, languages) {
+  backtoRepoButton.classList.remove("hide");
   myRepoInfo.innerHTML = "";
   myRepoInfo.classList.remove("hide");
   repoInfo.classList.add("hide");
-  // add view repo code here
   const div = document.createElement("div");
   div.innerHTML = `
     <h3>Name:${repoDetails.name}</h3>
@@ -83,3 +85,24 @@ const displaySpecificRepoInfo = function (repoDetails, languages) {
     <a class="visit" href="${repoDetails.html_url}" target="_blank" rel="noreferrer noopener">View Repo on GitHub!</a>`;
   myRepoInfo.append(div);
 };
+
+backtoRepoButton.addEventListener("click", function () {
+  repoInfo.classList.remove("hide"); //the location where all the repo info appears
+  myRepoInfo.classList.add("hide"); //the section where the individual repo data will appear
+  backtoRepoButton.add("hide"); //the back to the repo gallery button 
+});
+
+filterInput.addEventListener("input", function (e) {
+  const searchText = e.target.value;
+  const repos = document.querySelectorAll(".repo");
+  const lowercaseText = searchText.toLowerCase();
+
+  for (const repo of repos) {
+    const repoLowerText = repo.innerText.toLowerCase();
+    if (repoLowerText.includes(lowercaseText)) {
+      repo.classList.remove("hide");
+    } else {
+      repo.classList.add("hide");
+    }
+  }
+});
